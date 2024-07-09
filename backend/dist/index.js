@@ -10,4 +10,5 @@ app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 const routes_1 = __importDefault(require("./routes"));
 app.use('/api/v1/', routes_1.default);
-app.listen(3000, () => console.log("server started"));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log("server started"));
