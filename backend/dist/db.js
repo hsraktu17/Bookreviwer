@@ -16,6 +16,14 @@ const userSchema = new mongoose_1.default.Schema({
         minlength: 3,
         maxlength: 30
     },
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        minlength: 3,
+        maxlength: 30
+    },
     firstname: {
         type: String,
         required: true,
@@ -32,6 +40,24 @@ const userSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
         minlength: 6
+    },
+    location: {
+        type: String,
+        trim: true
+    },
+    age: {
+        type: Number
+    },
+    work: {
+        type: String,
+        trim: true
+    },
+    dob: {
+        type: Date
+    },
+    description: {
+        type: String,
+        trim: true
     }
 });
 const User = mongoose_1.default.model('User', userSchema);

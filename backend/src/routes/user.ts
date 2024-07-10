@@ -3,12 +3,14 @@ import z from 'zod'
 import { User } from '../db'
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '../config'
+import authMiddleware from '../middleware'
 
 
 const router = express.Router()
 
 const signupSchema = z.object({
     email : z.string().email(),
+    username : z.string().min(3),
     firstname : z.string().min(3),
     lastname : z.string().min(3),
     password : z.string().min(6)
@@ -37,6 +39,7 @@ router.post('/signup',async(req : Request, res : Response)=>{
 
     const user = await User.create({
         email : req.body.email,
+        username : req.body.username,
         firstname : req.body.firstname,
         lastname : req.body.lastname,
         password : req.body.password
@@ -50,7 +53,8 @@ router.post('/signup',async(req : Request, res : Response)=>{
 
     res.status(201).json({
         message : "user created",
-        token
+        token,
+        id : user._id
     })
 
 })
@@ -82,7 +86,8 @@ router.post('/signin',async (req : Request, res : Response) =>{
         },JWT_SECRET)
         return res.json({
             message : "signin done",
-            token
+            token,
+            id : findUser._id
         })
     }
 
@@ -91,4 +96,28 @@ router.post('/signin',async (req : Request, res : Response) =>{
     })
 })
 
+
+router.get('/userinfo',authMiddleware,async( req : Request, res : Response)=>{
+    try{
+        const user = await User.findById(req.userId)
+        
+
+        if(!user){
+            return res.status(404).json({
+                message : "user not found"
+            })
+        }
+
+        return res.json({
+            id : user._id,
+            name : `${user.firstname} ${user.lastname}`,
+            email : user.email
+        })
+    }catch(e){
+        console.error("error : ",e)
+        return res.status(500).json({
+            message : "error happened"
+        })
+    }
+})
 export default router

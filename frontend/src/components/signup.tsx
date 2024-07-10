@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom"
 function Signup () {
 
     const[email,setEmail] = useState<string>("")
+    const[username,setUsername] = useState<string>("")
     const[password,setPassword] = useState<string>("")
     const[firstname,setFirstname] = useState<string>("")
     const[lastname,setLastname] = useState<string>("")
@@ -15,6 +16,7 @@ function Signup () {
         try{
             const response = await axios.post("http://localhost:5000/api/v1/user/signup",{
                 email : email,
+                username : username,
                 password : password,
                 firstname : firstname,
                 lastname : lastname
@@ -22,14 +24,15 @@ function Signup () {
             const token = response.data.token
             if(token && password.length >= 6){
                 localStorage.setItem("token", response.data.token)
-                console.log(token)
-                navigate('/dashboard')
+                // console.log(token)
+                navigate('/verification')
                 setValidUser(true)
             }else{
                 setValidUser(false)
             }
         }catch(e){
             console.error("error:",e)
+            setValidUser(false)
         }
         
     }
@@ -49,6 +52,12 @@ function Signup () {
                     type="email"
                     placeholder="Email"
                     onChange={(e) => setEmail(e.target.value)}
+                />
+                <input 
+                    className="w-full mb-4 px-1 py-2"
+                    type="text"
+                    placeholder="Username"
+                    onChange={(e) => setUsername(e.target.value)}
                 />
                 <input 
                     className="w-full mb-4 px-1 py-2"
@@ -72,6 +81,11 @@ function Signup () {
             <button className="w-full rounded-xl hover:bg-gray-800 py-1 bg-black text-white" onClick={handleSignup}>
                 Sign up
             </button>
+            {!validUser && (
+                <div className="text-red-500 mt-4 items-center">
+                    SignUp failed!!
+                </div>
+            )}
         </div>
     </div>
 }

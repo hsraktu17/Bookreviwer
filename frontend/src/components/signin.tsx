@@ -6,7 +6,7 @@ function Signin () {
 
     const[email,setEmail] = useState<string>("")
     const[password,setPassword] = useState<string>("")
-    const [validUser, setValidUser] = useState<boolean>(true)
+    const[validUser, setValidUser] = useState<boolean>(true)
     const navigate = useNavigate()
 
     const handleSignIn = async () =>{
@@ -16,9 +16,10 @@ function Signin () {
                 password : password
             })
             const token = response.data.token
+            console.log(response.data.id)
             if(token && password.length >= 6){
                 localStorage.setItem("token", response.data.token)
-                console.log(token)
+                // console.log(token)
                 navigate('/dashboard')
                 setValidUser(true)
             }else{
