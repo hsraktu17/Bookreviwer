@@ -21,7 +21,7 @@ function App(){
         <Route path ="/update-profile" element={<UpdateProfile />}/>
         <Route path ="/verification" element={<VerifyForm />}/>
         <Route path ="/bookpage" element={<BooksList />}/>
-        <Route path ="/bookdetail" element={<BookDetails />}/>
+        <Route path ="/books/:id" element={<BookDetails />}/>
       </Routes>
     </BrowserRouter>
   </div>

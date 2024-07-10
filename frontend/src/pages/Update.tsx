@@ -159,7 +159,7 @@ const UpdateProfile = () => {
             />
           </div>
           {message && <p className="text-green-500">{message}</p>}
-          {error && <p className="text-red-500">{error}</p>}
+          {error && <p className="text-red-500">{error && updateData}</p>}
           <div className="flex justify-center">
             <button
               type="submit"
