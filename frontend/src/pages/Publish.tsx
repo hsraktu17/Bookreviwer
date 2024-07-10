@@ -1,53 +1,121 @@
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { ChangeEvent, useState } from "react";
-import Navbar from "../components/navbar";
+// components/AddBookForm.tsx
 
-export const Publish = () => {
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const navigate = useNavigate();
+import React, { useState } from 'react';
+import axios from 'axios';
+import Navbar from '../components/navbar';
+import { useNavigate } from 'react-router-dom';
 
-    return <div>
-        <Navbar/>
-        <div className="flex justify-center w-full pt-8"> 
-            <div className="max-w-screen-lg w-full">
-                <input onChange={(e) => {
-                    setTitle(e.target.value)
-                }} type="text" className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Title" />
+const AddBookForm: React.FC = () => {
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [genre, setGenre] = useState('');
+  const [description, setDescription] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate()
 
-                <TextEditor onChange={(e) => {
-                    setDescription(e.target.value)
-                }} />
-                <button onClick={async () => {
-                    const response = await axios.post(`https://backend.utkarsh172002srivastava.workers.dev/api/v1/blog`, {
-                        title,
-                        content: description
-                    }, {
-                        headers: {
-                            Authorization: localStorage.getItem("token")
-                        }
-                    });
-                    navigate(`/blog/${response.data.id}`)
-                }} type="submit" className="mt-4 inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
-                    Publish post
-                </button>
-            </div>
-        </div>
-    </div>
-}
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-
-function TextEditor({ onChange }: {onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void}) {
-    return <div className="mt-2">
-        <div className="w-full mb-4 ">
-            <div className="flex items-center justify-between border">
-            <div className="my-2 bg-white rounded-b-lg w-full">
-                <label className="sr-only">Publish post</label>
-                <textarea onChange={onChange} id="editor" rows={8} className="focus:outline-none block w-full px-0 text-sm text-gray-800 bg-white border-0 pl-2" placeholder="Write an article..." required />
-            </div>
-        </div>
-       </div>
-    </div>
     
-}
+    try {
+
+      const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
+
+      if (!token) {
+        navigate('/signin')
+        
+      }
+
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+      };
+
+      const response = await axios.post('http://localhost:5000/api/v1/bookR/books/', { title, author, genre, description },{ headers });
+      console.log('Book added successfully:', response.data);
+      navigate('/bookpage')
+      // Optionally: Show success message or redirect to a success page
+    } catch (error) {
+      console.error('Error adding book:', error);
+      setErrorMessage('An error occurred while adding the book');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <Navbar />
+      <div className="flex justify-center mt-5">
+        <div className="w-full max-w-lg">
+          <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <h2 className="text-2xl font-bold mb-6">Add a New Book</h2>
+            {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
+            <form onSubmit={handleSubmit}>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="title">
+                  Title:
+                  <input
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="title"
+                    type="text"
+                    placeholder="Title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                  />
+                </label>
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="author">
+                  Author:
+                  <input
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="author"
+                    type="text"
+                    placeholder="Author"
+                    value={author}
+                    onChange={(e) => setAuthor(e.target.value)}
+                    required
+                  />
+                </label>
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="genre">
+                  Genre:
+                  <input
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="genre"
+                    type="text"
+                    placeholder="Genre"
+                    value={genre}
+                    onChange={(e) => setGenre(e.target.value)}
+                  />
+                </label>
+              </div>
+              <div className="mb-6">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
+                  Description:
+                  <textarea
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="description"
+                    placeholder="Description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                </label>
+              </div>
+              <div className="flex items-center justify-between">
+                <button
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  type="submit"
+                >
+                  Add Book
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AddBookForm;

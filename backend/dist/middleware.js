@@ -15,7 +15,7 @@ const authMiddleware = (req, res, next) => {
     try {
         console.log("Token:", token); // Log the token
         const decoded = jsonwebtoken_1.default.verify(token, config_1.JWT_SECRET);
-        console.log("Decoded Token:", decoded); // Log the decoded token
+        console.log("Decodeverifyd Token:", decoded); // Log the decoded token
         if (decoded.userId) {
             req.userId = decoded.userId;
             next();

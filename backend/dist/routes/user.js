@@ -96,15 +96,127 @@ router.get('/userinfo', middleware_1.default, (req, res) => __awaiter(void 0, vo
             });
         }
         return res.json({
-            id: user._id,
             name: `${user.firstname} ${user.lastname}`,
-            email: user.email
+            email: user.email,
+            username: user.username,
+            location: user.location,
+            age: user.age,
+            work: user.work,
+            dob: user.dob,
+            description: user.description
         });
     }
     catch (e) {
         console.error("error : ", e);
         return res.status(500).json({
             message: "error happened"
+        });
+    }
+}));
+const verifySchema = zod_1.default.object({
+    location: zod_1.default.string().optional(),
+    age: zod_1.default.number().optional(),
+    work: zod_1.default.string().optional(),
+    description: zod_1.default.string().optional()
+});
+router.post('/verify', middleware_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const validate = verifySchema.safeParse(req.body);
+    if (!validate.success) {
+        return res.status(400).json({
+            message: "invalid data"
+        });
+    }
+    try {
+        const user = yield db_1.User.findById(req.userId);
+        if (!user) {
+            return res.status(404).json({
+                message: "user not found"
+            });
+        }
+        user.location = req.body.location || user.location;
+        user.age = req.body.age || user.age;
+        user.work = req.body.work || user.work;
+        user.description = req.body.description || user.description;
+        yield user.save();
+        return res.json({
+            message: "user info updated",
+            user: {
+                id: user._id,
+                username: user.username,
+                name: `${user.firstname} ${user.lastname}`,
+                email: user.email,
+                location: user.location,
+                age: user.age,
+                work: user.work,
+                dob: user.dob,
+                description: user.description
+            }
+        });
+    }
+    catch (e) {
+        console.error("error: ", e);
+        return res.status(500).json({
+            message: "an error occurred"
+        });
+    }
+}));
+const updateSchema = zod_1.default.object({
+    firstname: zod_1.default.string().min(3).optional(),
+    lastname: zod_1.default.string().min(3).optional(),
+    location: zod_1.default.string().optional(),
+    age: zod_1.default.number().optional(),
+    work: zod_1.default.string().optional(),
+    dob: zod_1.default.string().optional(),
+    description: zod_1.default.string().optional()
+});
+router.put('/update', middleware_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const validate = updateSchema.safeParse(req.body);
+    if (!validate.success) {
+        return res.status(400).json({
+            message: "Invalid data"
+        });
+    }
+    try {
+        const user = yield db_1.User.findById(req.userId);
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+        if (req.body.firstname)
+            user.firstname = req.body.firstname;
+        if (req.body.lastname)
+            user.lastname = req.body.lastname;
+        if (req.body.location)
+            user.location = req.body.location;
+        if (req.body.age)
+            user.age = req.body.age;
+        if (req.body.work)
+            user.work = req.body.work;
+        if (req.body.dob)
+            user.dob = req.body.dob;
+        if (req.body.description)
+            user.description = req.body.description;
+        yield user.save();
+        return res.json({
+            message: "User info updated",
+            user: {
+                id: user._id,
+                username: user.username,
+                name: `${user.firstname} ${user.lastname}`,
+                email: user.email,
+                location: user.location,
+                age: user.age,
+                work: user.work,
+                dob: user.dob,
+                description: user.description
+            }
+        });
+    }
+    catch (e) {
+        console.error("Error: ", e);
+        return res.status(500).json({
+            message: "An error occurred"
         });
     }
 }));

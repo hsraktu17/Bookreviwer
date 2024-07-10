@@ -5,6 +5,6 @@ import bookRouter from './book'
 const router = express.Router()
 
 router.use('/user',userRouter)
-router.use('/book',bookRouter)
+router.use('/bookR',bookRouter)
 
 export default router
